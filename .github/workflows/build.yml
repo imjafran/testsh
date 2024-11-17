@@ -1,4 +1,4 @@
-name: Build and Save Executable
+name: Build and Push Executable
 
 on:
   push:
@@ -25,9 +25,18 @@ jobs:
       - name: Build test.cpp
         run: g++ -o test test.cpp
 
-      # Step 4: Upload the built executable as an artifact
-      - name: Upload Executable
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-executable
-          path: ./test
+      # Step 4: Set up Git with the GIT_KEY secret and configure user info
+      - name: Configure Git
+        run: |
+          git config --global user.name "imjafran"
+          git config --global user.email "exjafran@gmail.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GIT_KEY }}@github.com/imjafran/testsh.git
+
+      # Step 5: Create and push the build branch
+      - name: Commit and Push Executable
+        run: |
+          git checkout -b build
+          mv test ./built-test
+          git add ./built-test
+          git commit -m "Add built executable"
+          git push -u origin build
