@@ -1,0 +1,33 @@
+name: Build and Save Executable
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies (g++)
+      - name: Install g++
+        run: sudo apt-get update && sudo apt-get install -y g++
+
+      # Step 3: Build the test.cpp file
+      - name: Build test.cpp
+        run: g++ -o test test.cpp
+
+      # Step 4: Upload the built executable as an artifact
+      - name: Upload Executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-executable
+          path: ./test
